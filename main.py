@@ -5,13 +5,11 @@ from datetime import datetime
 import schedule
 import time
 
-load_dotenv()
-
 def send_sms(phone, message, api_key):
     requests.post('https://textbelt.com/text', {
-      'phone': os.getenv("PHONE_NUMBER"),
-      'message': 'Hello world',
-      'key' : os.getenv("API_KEY"),
+      'phone': phone,
+      'message': message,
+      'key' : api_key,
     })
 
 def fetch_job_postings(url):
@@ -51,12 +49,17 @@ def check_for_new_postings(url):
     for job in job_postings:
         if job['date'] == today:
             message = f"New Job Posting!\nDate: {job['date']}\nCompany: {job['company']}\nRole: {job['role']}"
+
+            load_dotenv()
+
             phone_number = os.getenv("PHONE_NUMBER")
             api_key = os.getenv("API_KEY")
+            
             response = send_sms(phone_number, message, api_key)
             print(response)
 
 if __name__=="__main__": 
+    print("SMS Internship Program Enabled")
     check_for_new_postings("https://raw.githubusercontent.com/Ouckah/Summer2025-Internships/main/README.md") 
 
 schedule.every(5).minutes.do(check_for_new_postings)
